@@ -63,8 +63,10 @@ void PrototypeConverBytesToCodes(const std::vector<byte> &bytes, std::vector<siz
             offset = (BITS_IN_BYTE + codeSize + offset) % BITS_IN_BYTE;
             codeSize = CODE_SIZE;
             byteshift = 0;
-            // keep parsing i byte
-            i--;
+            // if we have offset then we have some bits to read in this iteration
+            // otherwise we have read all bits in "i" byte
+            if (offset > 0)
+                i--;
         }
         // if (codeSize > BITS_IN_BYTE) {
         //     ssize_t shift{static_cast<ssize_t>(byteoffset - offset)};
