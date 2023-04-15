@@ -6,6 +6,9 @@ set(TARGET
 )
 set(SOURCES
     src/main.cpp
+    src/comptable.h
+    src/comptable.cpp
+    src/utils.h
 )
 
 project(${TARGET})

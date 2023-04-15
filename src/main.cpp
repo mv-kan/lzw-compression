@@ -3,7 +3,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
-
+#include "comptable.h"
+// klzw stands for kan's lzw 
 using byte = unsigned char;
 const byte MAX_BYTE = 0xFF;
 const int CODE_SIZE = 10; // in bits
@@ -108,7 +109,14 @@ void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &co
     out.write(reinterpret_cast<const char *>(& bytes[0]), bytes.size());
     out.close();
 }
+
 int main() {
+    klzw::comptable tb{};
+    std::cout << "Hi" << std::endl;
+    std::cout << "tb['A'] = " << tb.Get("A") << std::endl;
+    std::cout << "tb['a'] = " << tb.Get("a") << std::endl;
+    std::cout << "tb['\\null'] = " << tb.Get(std::string(0)) << std::endl;
+    return 0;
     std::vector<size_t> codes{ 0b110001010, 0b101010101, 0b100001111, 0b1, 0b1, 0b1111111111};
     std::vector<size_t> codes2;
     std::vector<byte> bytes;
