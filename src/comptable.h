@@ -4,15 +4,32 @@
 #include <iostream>
 #include <unordered_map>
 #include "utils.h"
+#include <vector>
 
 namespace klzw
 {
+    namespace details
+    {
+        struct VectorHasher
+        {
+            int operator()(const std::vector<byte> &V) const
+            {
+                int hash = V.size();
+                for (auto &i : V)
+                {
+                    hash ^= i + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+                }
+                return hash;
+            }
+        };
+    } // namespace details
+    
     // compresssion table
     class comptable
     {
     private:
-        // TODO: maybe use string_view with really long string stream
-        std::unordered_map<std::string, code_t> _table;
+        // I use vector<byte> for string because default std::string won't allow /null (0) char in the middle or beginning
+        std::unordered_map<std::vector<byte>, code_t, details::VectorHasher> _table;
         
         size_t _codeSize{details::BITS_IN_BYTE + 1};
 
@@ -31,11 +48,11 @@ namespace klzw
         code_t ExtentCodeSizeCode() const;
         
         // set str in table with next available code
-        void Set(std::string str);
+        void Set(std::vector<byte> str);
 
         // get str code in str
         // returns StopCode if value str is not found
-        code_t Get(std::string str) const;
+        code_t Get(std::vector<byte> str) const;
     };
 } // namespace klzw
 
