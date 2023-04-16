@@ -13,7 +13,6 @@ set(SOURCES
     src/decompress.cpp
     src/decompress.h
     src/klzw.h
-    src/comptable.cpp
     src/utils.h
 )
 

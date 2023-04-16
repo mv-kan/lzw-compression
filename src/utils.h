@@ -17,6 +17,8 @@ namespace klzw
 
             return max >> ((sizeof(code_t) * 8) - bits);
         }
+
+        
     } // namespace details
 }
 #endif

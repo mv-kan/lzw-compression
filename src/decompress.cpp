@@ -1,6 +1,5 @@
-#include "lzw.h"
 #include <stdexcept>
-#include <decompress.h>
+#include "decompress.h"
 
 namespace klzw
 {
