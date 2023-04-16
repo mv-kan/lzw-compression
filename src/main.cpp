@@ -112,7 +112,7 @@ void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &co
 }
 
 int main() {
-    klzw::comptable tb{};
+    klzw::details::comptable tb{};
     std::cout << "Hi" << std::endl;
     std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
     std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;

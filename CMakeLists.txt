@@ -8,6 +8,12 @@ set(SOURCES
     src/main.cpp
     src/comptable.h
     src/comptable.cpp
+    src/compress.cpp
+    src/compress.h
+    src/decompress.cpp
+    src/decompress.h
+    src/klzw.h
+    src/comptable.cpp
     src/utils.h
 )
 
