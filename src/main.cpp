@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include "comptable.h"
+#include "klzw.h"
 // klzw stands for kan's lzw 
 using byte = unsigned char;
 const byte MAX_BYTE = 0xFF;
