@@ -7,10 +7,51 @@
 #include <vector>
 namespace klzw
 {
+    namespace details
+    {
+        size_t CodesToBytes(const std::vector<code_t> &codes, size_t codeSize, std::vector<byte> &bytes) {
+            size_t offset{};
+            size_t currentByteIndex{};
+            if (bytes.size() == 0)
+                bytes.push_back(0);
+
+            
+            for (size_t i = 0; i < codes.size(); ++i)
+            {
+                size_t code = codes[i];
+                ssize_t _codeSize = codeSize;
+                if (code == MaxValue(codeSize) - 1) {
+                    codeSize += 1;
+                }
+                while (code || _codeSize > 0)
+                {
+                    bytes[currentByteIndex] += (code << offset) & MaxValue(BITS_IN_BYTE);
+                    code >>= BITS_IN_BYTE - offset;
+                    _codeSize -= BITS_IN_BYTE - offset;
+                    // if code size is bigger than 0 then we just add another byte
+                    if (_codeSize > 0)
+                    {
+                        bytes.push_back(0);
+                        currentByteIndex++;
+
+                        // we dont have offset here so we reset it
+                        offset = 0;
+                    }
+                    else
+                    {                                      // otherwise we change offset value,
+                        offset = BITS_IN_BYTE + _codeSize; // this is subtraction because codeSize is negative here
+                    }
+                }
+            }
+            return offset;
+        }
+    } // namespace details
+    
     void Compress(std::string inputfile, std::string outputfile)
     {
         std::ifstream _inputfile(inputfile, std::ios::in | std::ios::binary);
-        if (_inputfile.is_open()) {
+        std::ofstream _outputfile(outputfile, std::ios::binary);
+        if (_inputfile.is_open() && _outputfile.is_open()) {
             // table (dictionary) of str -> code 
             details::comptable table{};
 
@@ -24,12 +65,16 @@ namespace klzw
             
             // where we store codes
             std::vector<code_t> codestream{}; 
-            codestream.reserve(BUF_SIZE);     
+            codestream.reserve(BUF_SIZE);
+
+            std::vector<byte> bytes{};
+            bytes.reserve(BUF_SIZE * 2);
 
             // read file
             while (_inputfile.read(buf, BUF_SIZE) || _inputfile.gcount())
             {
                 buf[_inputfile.gcount()] = '\0';
+                size_t oldCodeSize = table.CodeSize();
 
                 // compression happens here
                 // convert bytes to codes, codes are stored in codestream
@@ -63,15 +108,22 @@ namespace klzw
                 }
 
                 // convert codestream to bytes and write them to outputfile
-                // also last offset byte we gonna  
-                
-                // write code to outputfile
-                // add new strings to table 
-                // see that video about lzw compression 
+                // clear bytes
+                bytes.resize(0);
+                // we need oldcodesize because if table.CodeSize changed then in codestream we have extendcode
+                // that will show to CodesToBytes that we need to extend our code 
+                details::CodesToBytes(codestream, oldCodeSize, bytes);
+                _outputfile.write(reinterpret_cast<const char *>(&bytes[0]), bytes.size());
             }
             _inputfile.close();
+            _outputfile.close();
         } else {
-            throw std::runtime_error("unable to open file \"" + inputfile + "\"");
+            if (_inputfile.is_open())
+            {
+                throw std::runtime_error("unable to open input file \"" + inputfile + "\"");
+            } else {
+                throw std::runtime_error("unable to open output file \"" + outputfile + "\"");
+            }
         }
     }
 } // namespace klzw
