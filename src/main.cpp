@@ -112,18 +112,18 @@ void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &co
 }
 
 int main() {
-    // std::cout << "test of reading file" << std::endl;
-    // klzw::Compress("/home/kan/Dev/lzw-compression/debug/test", "test.klzw");
+    std::cout << "test of reading file" << std::endl;
+    klzw::Compress("/home/kan/Dev/lzw-compression/debug/test", "/home/kan/Dev/lzw-compression/debug/test.klzw");
 
-    // return 0;
-    // klzw::details::comptable tb{};
-    // std::cout << "Hi" << std::endl;
-    // std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
-    // std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;
-    // std::cout << "tb['B'] = " << tb.Get({'B'}) << std::endl;
-    // std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
-    // std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
-    // return 0;
+    return 0;
+    klzw::details::comptable tb{};
+    std::cout << "Hi" << std::endl;
+    std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
+    std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;
+    std::cout << "tb['B'] = " << tb.Get({'B'}) << std::endl;
+    std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
+    std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
+    return 0;
     std::vector<size_t> codes{0b110001010, 0b101010101, 0b0100001111, 0b1, 0b1, 0b1111111110, 0b1111111100, 0b10010010011};
     std::vector<size_t> codes2;
     std::vector<byte> bytes;

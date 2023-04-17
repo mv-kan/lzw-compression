@@ -113,6 +113,9 @@ namespace klzw
                 // that will show to CodesToBytes that we need to extend our code 
                 byteoffset = details::CodesToBytes(codestream, oldCodeSize, bytes, byteoffset);
                 
+                // clear codestream
+                codestream.resize(0);
+
                 // if byteoffset is bigger than 0 it means that we have free bits in last byte
                 // we will not write last byte if we have space in the last byte
                 // instead we arrange bytes in that way that in the next iteration we will have
