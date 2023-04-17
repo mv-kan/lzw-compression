@@ -9,8 +9,8 @@ namespace klzw
 {
     namespace details
     {
-        size_t CodesToBytes(const std::vector<code_t> &codes, size_t codeSize, std::vector<byte> &bytes) {
-            size_t offset{};
+        size_t CodesToBytes(const std::vector<code_t> &codes, size_t codeSize, std::vector<byte> &bytes, size_t offset) {
+            size_t _offset{offset};
             size_t currentByteIndex{};
             if (bytes.size() == 0)
                 bytes.push_back(0);
@@ -25,9 +25,9 @@ namespace klzw
                 }
                 while (code || _codeSize > 0)
                 {
-                    bytes[currentByteIndex] += (code << offset) & MaxValue(BITS_IN_BYTE);
-                    code >>= BITS_IN_BYTE - offset;
-                    _codeSize -= BITS_IN_BYTE - offset;
+                    bytes[currentByteIndex] += (code << _offset) & MaxValue(BITS_IN_BYTE);
+                    code >>= BITS_IN_BYTE - _offset;
+                    _codeSize -= BITS_IN_BYTE - _offset;
                     // if code size is bigger than 0 then we just add another byte
                     if (_codeSize > 0)
                     {
@@ -35,15 +35,15 @@ namespace klzw
                         currentByteIndex++;
 
                         // we dont have offset here so we reset it
-                        offset = 0;
+                        _offset = 0;
                     }
                     else
                     {                                      // otherwise we change offset value,
-                        offset = BITS_IN_BYTE + _codeSize; // this is subtraction because codeSize is negative here
+                        _offset = BITS_IN_BYTE + _codeSize; // this is subtraction because codeSize is negative here
                     }
                 }
             }
-            return offset;
+            return _offset;
         }
     } // namespace details
     
@@ -70,15 +70,16 @@ namespace klzw
             std::vector<byte> bytes{};
             bytes.reserve(BUF_SIZE * 2);
 
+            size_t byteoffset{};
             // read file
             while (_inputfile.read(buf, BUF_SIZE) || _inputfile.gcount())
             {
-                buf[_inputfile.gcount()] = '\0';
+                // buf[_inputfile.gcount()] = '\0';
                 size_t oldCodeSize = table.CodeSize();
-
+                size_t bytesread = static_cast<size_t>(_inputfile.gcount());
                 // compression happens here
                 // convert bytes to codes, codes are stored in codestream
-                for (size_t i = 0; i < _inputfile.gcount(); i++)
+                for (size_t i = 0; i < bytesread; i++)
                 {
                     // buf[i] - next char in charstream
                     code_t stopCode = table.StopCode();
@@ -108,12 +109,25 @@ namespace klzw
                 }
 
                 // convert codestream to bytes and write them to outputfile
-                // clear bytes
-                bytes.resize(0);
                 // we need oldcodesize because if table.CodeSize changed then in codestream we have extendcode
                 // that will show to CodesToBytes that we need to extend our code 
-                details::CodesToBytes(codestream, oldCodeSize, bytes);
-                _outputfile.write(reinterpret_cast<const char *>(&bytes[0]), bytes.size());
+                byteoffset = details::CodesToBytes(codestream, oldCodeSize, bytes, byteoffset);
+                
+                // if byteoffset is bigger than 0 it means that we have free bits in last byte
+                // we will not write last byte if we have space in the last byte
+                // instead we arrange bytes in that way that in the next iteration we will have
+                // the byte at the first(0) index  
+                size_t writebytes = byteoffset > 0 ? bytes.size() - 1 : bytes.size();
+                _outputfile.write(reinterpret_cast<const char *>(&bytes[0]), writebytes);
+
+                // if we have free bits in last byte, we save it in the first of bytes for next iteration
+                if (byteoffset > 0) {
+                    bytes[0] = bytes[bytes.size() - 1];
+                    bytes.resize(1);
+                } else {
+                    bytes.resize(0);
+                }
+
             }
             _inputfile.close();
             _outputfile.close();
