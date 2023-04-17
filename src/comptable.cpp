@@ -23,7 +23,7 @@ namespace klzw
             return details::MaxValue(_codeSize);
         }
 
-        code_t comptable::ExtentCodeSizeCode() const
+        code_t comptable::ExtendCode() const
         {
             return details::MaxValue(_codeSize) - 1;
         }
@@ -41,6 +41,10 @@ namespace klzw
                 return StopCode();
             else
                 return got->second;
+        }
+        void comptable::ExtendCodeSize()
+        {
+            _codeSize += 1;
         }
     } // namespace details
 } // namespace klzw

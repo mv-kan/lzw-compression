@@ -38,14 +38,21 @@ namespace klzw
             // inits all 8 byte values automatically
             comptable();
             ~comptable() = default;
+
+            void ExtendCodeSize();
+
             // get current code size
             inline size_t CodeSize() const { return _codeSize; }
+
+            // get next available code
+            inline code_t NextCode() const {return _nextAvailableCode;};
 
             // get stop code for this code size
             code_t StopCode() const;
 
             // get extent code size code
-            code_t ExtentCodeSizeCode() const;
+            // this code shows to compressor that we need to extend code size by 1 
+            code_t ExtendCode() const;
 
             // set str in table with next available code
             void Set(std::vector<byte> str);
