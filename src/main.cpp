@@ -8,7 +8,7 @@
 // klzw stands for kan's lzw 
 using byte = unsigned char;
 const byte MAX_BYTE = 0xFF;
-const int CODE_SIZE = 10; // in bits
+const int CODE_SIZE = 9; // in bits
 const int BITS_IN_BYTE = 8;
 
 
@@ -112,27 +112,30 @@ void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &co
 }
 
 int main() {
-    std::cout << "test of reading file" << std::endl;
-    klzw::Compress("/home/kan/Dev/lzw-compression/debug/test.bin", "/home/kan/Dev/lzw-compression/debug/test.bin.klzw");
+    // std::cout << "test of reading file" << std::endl;
+    // klzw::Compress("/home/kan/Dev/lzw-compression/debug/test.bin", "/home/kan/Dev/lzw-compression/debug/test.bin.klzw");
 
-    return 0;
-    klzw::details::comptable tb{};
-    std::cout << "Hi" << std::endl;
-    std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
-    std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;
-    std::cout << "tb['B'] = " << tb.Get({'B'}) << std::endl;
-    std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
-    std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
-    return 0;
-    std::vector<size_t> codes{0b110001010, 0b101010101, 0b0100001111, 0b1, 0b1, 0b1111111110, 0b1111111100, 0b10010010011};
+    // return 0;
+    // klzw::details::comptable tb{};
+    // std::cout << "Hi" << std::endl;
+    // std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
+    // std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;
+    // std::cout << "tb['B'] = " << tb.Get({'B'}) << std::endl;
+    // std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
+    // std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
+    // return 0;
+    std::vector<size_t> codes{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001};
     std::vector<size_t> codes2;
     std::vector<byte> bytes;
 
-    size_t offset = klzw::details::CodesToBytes(codes, CODE_SIZE, bytes, 0);
+    size_t offset = klzw::details::CodesToBytes(codes, CODE_SIZE, bytes, 2);
     std::cout << offset << std::endl;
     for (size_t i = 0; i < bytes.size(); i++) {
-        std::cout << std::bitset<8>(bytes[i]) << "\t" << (int)bytes[i] << std::endl;
+        // std::cout << std::bitset<8>(bytes[i]) << "\t" << (int)bytes[i] << std::endl;
+        std::cout << "0b"<<std::bitset<8>(bytes[i]) << ", ";
     }
+    std::cout << offset << std::endl;
+    return 0;
     ProtoConverBytesToCodes(bytes, codes2);
 
     for (size_t i = 0; i < codes2.size(); i++)

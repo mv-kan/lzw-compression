@@ -38,12 +38,12 @@ namespace klzw
                         _offset = 0;
                     }
                     else
-                    {                                      // otherwise we change offset value,
+                    {                                       // otherwise we change offset value,
                         _offset = BITS_IN_BYTE + _codeSize; // this is subtraction because codeSize is negative here
                     }
                 }
             }
-            return _offset;
+            return _offset % BITS_IN_BYTE; // offset may equal to 8, but in reality it means that we don't have offset at all 
         }
     } // namespace details
     
