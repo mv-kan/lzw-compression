@@ -153,8 +153,6 @@ namespace klzw
                 // clear codestream
                 codestream.resize(0);
             }
-            
-            
 
             _inputfile.close();
             _outputfile.close();
