@@ -5,6 +5,8 @@
 #include "compress.h"
 #include "comptable.h"
 #include <vector>
+#include <bitset>
+
 namespace klzw
 {
     namespace details
@@ -15,7 +17,6 @@ namespace klzw
             if (bytes.size() == 0)
                 bytes.push_back(0);
 
-            
             for (size_t i = 0; i < codes.size(); ++i)
             {
                 size_t code = codes[i];
@@ -56,7 +57,7 @@ namespace klzw
             details::comptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{100};
+            const size_t BUF_SIZE{10};
             char buf[BUF_SIZE + 1];
             
             // our string, in which we are going to store chars
@@ -107,22 +108,41 @@ namespace klzw
                         str.push_back(buf[i]);
                     } 
                 }
-
+                if (_inputfile.eof()) {
+                    // table.get(str) always valid code and not StopCode
+                    codestream.push_back(table.Get(str));
+                }
                 // convert codestream to bytes and write them to outputfile
                 // we need oldcodesize because if table.CodeSize changed then in codestream we have extendcode
                 // that will show to CodesToBytes that we need to extend our code 
                 byteoffset = details::CodesToBytes(codestream, oldCodeSize, bytes, byteoffset);
                 
-                // clear codestream
-                codestream.resize(0);
-
                 // if byteoffset is bigger than 0 it means that we have free bits in last byte
                 // we will not write last byte if we have space in the last byte
                 // instead we arrange bytes in that way that in the next iteration we will have
                 // the byte at the first(0) index  
                 size_t writebytes = byteoffset > 0 ? bytes.size() - 1 : bytes.size();
                 _outputfile.write(reinterpret_cast<const char *>(&bytes[0]), writebytes);
-
+                /* DEBUG OUTPUT may come in handy later 
+                std::cout << "\ncode" << "\t\t\t" << "byte in input" << "\t\t\t" << "byte in output" << byteoffset << "\n";
+                for (size_t i = 0; i < bytes.size(); i++)
+                {
+                    if (i < codestream.size()) {
+                        std::cout <<"0b" <<std::bitset<10>(codestream[i]) << "\t\t";
+                    } else {
+                        std::cout << "none\t\t\t";
+                    }
+                    if (i < bytesread)
+                    {
+                        std::cout << "0b" << std::bitset<8>(buf[i]) << "\t\t";
+                    }
+                    else
+                    {
+                        std::cout << "none\t";
+                    }
+                    std::cout << "\t\t" << "0b" << std::bitset<8>(bytes[i]) << "\n";
+                }
+                */
                 // if we have free bits in last byte, we save it in the first of bytes for next iteration
                 if (byteoffset > 0) {
                     bytes[0] = bytes[bytes.size() - 1];
@@ -130,8 +150,12 @@ namespace klzw
                 } else {
                     bytes.resize(0);
                 }
-
+                // clear codestream
+                codestream.resize(0);
             }
+            
+            
+
             _inputfile.close();
             _outputfile.close();
         } else {
