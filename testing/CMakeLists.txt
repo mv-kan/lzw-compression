@@ -4,6 +4,8 @@ set(TARGET_TEST
     klzwtest
 )
 set(SOURCES_TEST
+    compress.cpp
+    decompress.cpp
     helloworldtest.cpp
 )
 

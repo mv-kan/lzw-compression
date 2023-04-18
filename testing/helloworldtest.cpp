@@ -6,7 +6,6 @@ TEST(helloworldtest, DemoGTest) {
     std::cout << a << std::endl;
     EXPECT_TRUE(true);
     EXPECT_EQ(a, 'a');
-    EXPECT_EQ(a, 'b');
 }
 
 int main(int argc, char **argv)

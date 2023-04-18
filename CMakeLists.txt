@@ -19,16 +19,6 @@ set(SOURCES
 set(TARGET_LIB 
     klzw_shared
 )
-set(SOURCES_LIB
-    src/comptable.h
-    src/comptable.cpp
-    src/compress.cpp
-    src/compress.h
-    src/decompress.cpp
-    src/decompress.h
-    src/klzw.h
-    src/utils.h
-)
 
 project(${TARGET})
 
@@ -40,7 +30,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 add_executable(${TARGET} ${SOURCES})
 
-add_library(${TARGET_LIB} STATIC ${SOURCES_LIB})
+add_library(${TARGET_LIB} STATIC ${SOURCES})
 
 target_compile_features(${TARGET} PRIVATE cxx_std_11)
 

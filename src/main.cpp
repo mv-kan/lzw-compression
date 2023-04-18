@@ -113,7 +113,7 @@ void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &co
 
 int main() {
     std::cout << "test of reading file" << std::endl;
-    klzw::Compress("/home/kan/Dev/lzw-compression/debug/test", "/home/kan/Dev/lzw-compression/debug/test.klzw");
+    klzw::Compress("/home/kan/Dev/lzw-compression/debug/test.bin", "/home/kan/Dev/lzw-compression/debug/test.bin.klzw");
 
     return 0;
     klzw::details::comptable tb{};
