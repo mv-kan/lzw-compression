@@ -20,7 +20,7 @@ namespace klzw
             {
                 size_t code = codes[i];
                 ssize_t _codeSize = codeSize;
-                if (code == MaxValue(codeSize) - 1) {
+                if (code == ExtendCode(codeSize)) {
                     codeSize += 1;
                 }
                 while (code || _codeSize > 0)

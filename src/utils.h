@@ -18,6 +18,9 @@ namespace klzw
             return max >> ((sizeof(code_t) * 8) - bits);
         }
 
+        code_t StopCode(size_t bits);
+        code_t ExtendCode(size_t bits);
+
     } // namespace details
 }
 #endif

@@ -20,12 +20,12 @@ namespace klzw
 
         code_t comptable::StopCode() const
         {
-            return details::MaxValue(_codeSize);
+            return details::StopCode(_codeSize);
         }
 
         code_t comptable::ExtendCode() const
         {
-            return details::MaxValue(_codeSize) - 1;
+            return details::ExtendCode(_codeSize);
         }
 
         void comptable::Set(std::vector<byte> str)

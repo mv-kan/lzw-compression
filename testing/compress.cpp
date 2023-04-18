@@ -45,13 +45,16 @@ TEST(compress, FileCompression)
     std::ofstream output_file(testfile, std::ios::binary); // Open file in binary mode
     if (output_file.is_open())
     {
-        char bytes[257];
-        for (int i = 0; i < 255; i ++) {
+        char bytes[258];
+        for (int i = 0; i <= 255; i ++) {
             bytes[i] = i;
         }
-        bytes[255] = 'A';
         bytes[256] = 'A';
-        output_file.write(bytes, 257); // Write data to file
+        bytes[257] = 'A';
+        output_file.write(bytes, 258); // Write data to file
+        
+        
+        
 
         output_file.close();
     }

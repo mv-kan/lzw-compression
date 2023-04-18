@@ -14,6 +14,7 @@ set(SOURCES
     src/decompress.h
     src/klzw.h
     src/utils.h
+    src/utils.cpp
 )
 
 set(TARGET_LIB 
