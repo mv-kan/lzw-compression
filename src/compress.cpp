@@ -57,7 +57,7 @@ namespace klzw
             details::comptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{10};
+            const size_t BUF_SIZE{100};
             char buf[BUF_SIZE + 1];
             
             // our string, in which we are going to store chars
@@ -67,7 +67,8 @@ namespace klzw
             // where we store codes
             std::vector<code_t> codestream{}; 
             codestream.reserve(BUF_SIZE);
-
+            
+            // bytes to write to outputfile
             std::vector<byte> bytes{};
             bytes.reserve(BUF_SIZE * 2);
 
@@ -157,7 +158,7 @@ namespace klzw
             _inputfile.close();
             _outputfile.close();
         } else {
-            if (_inputfile.is_open())
+            if (!_inputfile.is_open())
             {
                 throw std::runtime_error("unable to open input file \"" + inputfile + "\"");
             } else {
