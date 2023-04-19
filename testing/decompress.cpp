@@ -14,7 +14,7 @@ TEST(decompress, BytesToCodesBaseCase) {
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, offset) << "offsets are not equal";
-
+    
     for (size_t i = 0; i < testoutput.size(); ++i)
     {
         EXPECT_EQ(testoutput[i], output[i]) << "Vectors testoutput and output differ at index " << i;
