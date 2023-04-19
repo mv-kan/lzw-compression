@@ -40,6 +40,25 @@ TEST(compress, CodesToBytesOffset)
     }
 }
 
+TEST(compress, CodesToBytesExtendCodeCase)
+{
+    std::vector<klzw::code_t> testinput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111110, 0b1111111100, 0b1, 0b1101001001};
+    std::vector<klzw::byte> testoutput{0b10001010, 0b10101011, 0b00111110, 0b00001010, 0b00010000, 0b11000000, 0b00111111, 0b11111111, 0b00000001, 0b00100100, 0b00001101};
+    const size_t testoffsetoutput{4};
+    const size_t testoffset{0};
+    const size_t CODE_SIZE = 9;
+    std::vector<klzw::byte> output{};
+    size_t offset = klzw::details::CodesToBytes(testinput, CODE_SIZE, output, testoffset);
+
+    EXPECT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
+    EXPECT_EQ(testoffsetoutput, offset) << "offsets are not equal";
+
+    for (size_t i = 0; i < testoutput.size(); ++i)
+    {
+        EXPECT_EQ(testoutput[i], output[i]) << "Vectors testoutput and output differ at index " << i;
+    }
+}
+
 TEST(compress, FileCompression)
 {
     std::string testfile = "filecomptest.bin";

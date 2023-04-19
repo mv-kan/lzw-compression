@@ -34,6 +34,10 @@ namespace klzw
                     // if left bits are less than codeSize it means we finish the conversion
                     if (static_cast<ssize_t>((bytesize - i) * BITS_IN_BYTE) - static_cast<ssize_t>(codeSize) > 0)
                     {
+                        // if we have extend code parsed then we extend code by 1
+                        if (codes[currentCodeIndex] == ExtendCode(codeSize)) {
+                            codeSize += 1;
+                        }
                         currentCodeIndex++;
                         codes.push_back(0);
                     }

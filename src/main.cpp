@@ -124,23 +124,23 @@ int main() {
     // // std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
     // // std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
     // // return 0;
-    std::vector<size_t> codes{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001};
+    std::vector<size_t> codes{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111110, 0b1111111100, 0b1, 0b1101001001};
     std::vector<size_t> codes2;
     std::vector<byte> bytes;
 
-    size_t offset = klzw::details::CodesToBytes(codes, CODE_SIZE, bytes, 2);
+    size_t offset = klzw::details::CodesToBytes(codes, CODE_SIZE, bytes, 0);
     std::cout << offset << std::endl;
     for (size_t i = 0; i < bytes.size(); i++) {
-        // std::cout << std::bitset<8>(bytes[i]) << "\t" << (int)bytes[i] << std::endl;
+        // std::cout << "0b"<<std::bitset<8>(bytes[i]) << "\t" << (int)bytes[i] << std::endl;
         std::cout << "0b"<<std::bitset<8>(bytes[i]) << ", ";
     }
     std::cout << offset << std::endl;
     // return 0;
-    offset = klzw::details::BytesToCodes(bytes, 2, codes2, CODE_SIZE);
+    offset = klzw::details::BytesToCodes(bytes, 0, codes2, CODE_SIZE);
     std::cout << "BYTES TO CODES " << offset << std::endl;
     for (size_t i = 0; i < codes2.size(); i++)
     {
-        std::cout << "0b"<< std::bitset<CODE_SIZE>(codes2[i]) << std::endl;
+        std::cout << "0b"<< std::bitset<CODE_SIZE + 1>(codes2[i]) << std::endl;
     }
     return 0;
     codes2.resize(0);
