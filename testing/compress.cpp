@@ -12,7 +12,7 @@ TEST(compress, CodesToBytesBaseCase)
     std::vector<klzw::byte> output{};
     size_t offset = klzw::details::CodesToBytes(testinput, CODE_SIZE, output, 0);
 
-    EXPECT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
+    ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, offset) << "offsets are not equal";
 
     for (size_t i = 0; i < testoutput.size(); ++i)
