@@ -6,7 +6,6 @@ set(TARGET_TEST
 set(SOURCES_TEST
     compress.cpp
     decompress.cpp
-    helloworldtest.cpp
 )
 
 # Add the test executable

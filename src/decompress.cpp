@@ -8,7 +8,11 @@ namespace klzw
     {
         size_t BytesToCodes(const std::vector<byte> &bytes, size_t offset, std::vector<code_t> &codes, size_t codeSize)
         {
-            
+            std::cout << bytes.size();
+            std::cout << offset;
+            std::cout << codes.size();
+            std::cout << codeSize;
+            return 0;
         }
     } // namespace details
 

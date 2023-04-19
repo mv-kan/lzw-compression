@@ -12,6 +12,8 @@ set(SOURCES
     src/compress.h
     src/decompress.cpp
     src/decompress.h
+    src/decomptable.cpp
+    src/decomptable.h
     src/klzw.h
     src/utils.h
     src/utils.cpp
