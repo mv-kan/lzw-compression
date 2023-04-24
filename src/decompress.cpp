@@ -6,15 +6,15 @@ namespace klzw
 {
     namespace details
     {
-        ssize_t BytesToCodes(const std::vector<byte> &bytes, size_t*offset, size_t*byteshift, std::vector<code_t> &codes, size_t codeSize)
+        void BytesToCodes(const std::vector<byte> &bytes, size_t *offset, size_t *byteshift, ssize_t *codeSizeVar, std::vector<code_t> &codes, size_t codeSize)
         {
             if (codes.size() == 0)
                 codes.push_back(0);
 
-            size_t&_offset{*offset};
+            size_t &_offset{*offset};
             size_t currentCodeIndex{};
-            ssize_t _codeSize{static_cast<ssize_t>(codeSize)};
-            size_t&_byteshift{*byteshift};
+            ssize_t &_codeSize{*codeSizeVar};
+            size_t &_byteshift{*byteshift};
             size_t maxByteValue{MaxValue(BITS_IN_BYTE)};
             size_t bytesize{bytes.size()};
             for (size_t i = 0; i < bytesize; i++)
@@ -52,8 +52,6 @@ namespace klzw
                         i--;
                 }
             }
-            
-            return _codeSize;
         }
     } // namespace details
 
@@ -86,11 +84,11 @@ namespace klzw
 
             size_t byteoffset{};
             size_t byteshift{};
-            size_t codeSize{};
+            ssize_t codeSize{static_cast<ssize_t>(table.CodeSize())};
             bool isFirstByte{true};
             code_t oldcode{};
 
-            // to save last code if invalid 
+            // to save last code if invalid
             code_t tmp{};
             while (_inputfile.read(buf, BUF_SIZE) || _inputfile.gcount())
             {
@@ -98,8 +96,9 @@ namespace klzw
                 // if we have left bytes in bufbytes we shouldn't overwrite them
                 bufbytes.insert(bufbytes.begin() + bufbytes.size(), std::begin(buf), buf + bytesread);
 
-                codeSize = details::BytesToCodes(bufbytes, &byteoffset, &byteshift, codes, table.CodeSize());
-                if (codeSize > 0) {
+                details::BytesToCodes(bufbytes, &byteoffset, &byteshift, &codeSize, codes, table.CodeSize());
+                if (codeSize > 0)
+                {
                     // if codeSize is more than zero then last code is not valid
                     tmp = codes[codes.size() - 1];
                     codes.pop_back();
@@ -150,7 +149,7 @@ namespace klzw
                     auto str = table.Get(outputcodes[i]);
                     outputbytes.insert(outputbytes.begin() + outputbytes.size(), str.begin(), str.end());
                 }
-                
+
                 _outputfile.write(reinterpret_cast<const char *>(&outputbytes[0]), outputbytes.size());
 
                 // flush everything
@@ -161,13 +160,8 @@ namespace klzw
                 {
                     // last code that is invalid
                     codes.push_back(tmp);
-                    bufbytes[0] = bufbytes[bufbytes.size() - 1];
-                    bufbytes.resize(1);
                 }
-                else
-                {
-                    bufbytes.resize(0);
-                }
+                bufbytes.resize(0);
             }
 
             _inputfile.close();
