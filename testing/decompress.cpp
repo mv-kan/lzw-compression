@@ -6,7 +6,7 @@
 
 TEST(decompress, BytesToCodesBaseCase)
 {
-    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001};
+    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001, 0b0};
     std::vector<klzw::byte> testinput{0b10001010, 0b10101011, 0b00111110, 0b00001010, 0b00010000, 0b10100000, 0b00111111, 0b11111111, 0b10100100};
     const size_t testoffset{0};
     const size_t CODE_SIZE = 9;
@@ -27,7 +27,7 @@ TEST(decompress, BytesToCodesBaseCase)
 
 TEST(decompress, BytesToCodesOffset)
 {
-    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001};
+    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001, 0b0};
     std::vector<klzw::byte> testinput{0b00101000, 0b10101110, 0b11111010, 0b00101000, 0b01000000, 0b10000000, 0b11111110, 0b11111100, 0b10010011, 0b00000010};
     const size_t testoffset{2};
     size_t testoffsetarg{2};
@@ -49,7 +49,7 @@ TEST(decompress, BytesToCodesOffset)
 
 TEST(decompress, BytesToCodesExtendCodeSizeCase)
 {
-    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111110, 0b1111111100, 0b1, 0b1101001001};
+    std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111110, 0b1111111100, 0b1, 0b1101001001, 0b0};
     std::vector<klzw::byte> testinput{0b10001010, 0b10101011, 0b00111110, 0b00001010, 0b00010000, 0b11000000, 0b00111111, 0b11111111, 0b00000001, 0b00100100, 0b00001101};
     const size_t testoffset{4};
     const size_t CODE_SIZE = 9;

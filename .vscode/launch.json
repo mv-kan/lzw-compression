@@ -8,8 +8,8 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/testing/klzwtest", // debug gtest
-            // "program": "${workspaceFolder}/build/klzw", // debug main
+            // "program": "${workspaceFolder}/build/testing/klzwtest", // debug gtest
+            "program": "${workspaceFolder}/build/klzw", // debug main
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

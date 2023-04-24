@@ -29,23 +29,25 @@ namespace klzw
                 // reset and parse next code
                 if (_codeSize < 0)
                 {
-                    // (bytesize - i) how many bytes are left to process
-                    // if we have bits to process we will add new elem
-                    // if left bits are less than codeSize it means we finish the conversion
-                    if (static_cast<ssize_t>((bytesize - i) * BITS_IN_BYTE) - static_cast<ssize_t>(codeSize) > 0)
-                    {
-                        // if we have extend code parsed then we extend code by 1
-                        if (codes[currentCodeIndex] == ExtendCode(codeSize))
-                        {
-                            codeSize += 1;
-                        }
-                        currentCodeIndex++;
-                        codes.push_back(0);
-                    }
                     // codeSize - is negative here
                     _offset = (BITS_IN_BYTE + _codeSize + _offset) % BITS_IN_BYTE;
-                    _codeSize = codeSize;
                     _byteshift = 0;
+                    // if we have extend code parsed then we extend code by 1
+                    if (codes[currentCodeIndex] == ExtendCode(codeSize))
+                    {
+                        codeSize += 1;
+                    }
+                    currentCodeIndex++;
+                    codes.push_back(0);
+                    // // (bytesize - i) how many bytes are left to process
+                    // // if we have bits to process we will add new elem
+                    // // if left bits are less than codeSize it means we finish the conversion
+                    // if (static_cast<ssize_t>((bytesize - i) * BITS_IN_BYTE) - static_cast<ssize_t>(codeSize) > 0)
+                    // {
+                        
+                        
+                    // }
+                    _codeSize = codeSize;
                     // if we have offset then we have some bits to read in this iteration
                     // otherwise we have read all bits in "i" byte
                     if (_offset > 0)
@@ -85,6 +87,7 @@ namespace klzw
             size_t byteoffset{};
             size_t byteshift{};
             ssize_t codeSize{static_cast<ssize_t>(table.CodeSize())};
+            size_t oldCodeSize{table.CodeSize()};
             bool isFirstByte{true};
             code_t oldcode{};
 
@@ -96,7 +99,9 @@ namespace klzw
                 // if we have left bytes in bufbytes we shouldn't overwrite them
                 bufbytes.insert(bufbytes.begin() + bufbytes.size(), std::begin(buf), buf + bytesread);
 
-                details::BytesToCodes(bufbytes, &byteoffset, &byteshift, &codeSize, codes, table.CodeSize());
+                details::BytesToCodes(bufbytes, &byteoffset, &byteshift, &codeSize, codes, oldCodeSize);
+                // this is in case if we got code extension, BytesToCode handles it but it need old code size to do conversion properly
+                oldCodeSize = table.CodeSize();
                 if (codeSize > 0)
                 {
                     // if codeSize is more than zero then last code is not valid
