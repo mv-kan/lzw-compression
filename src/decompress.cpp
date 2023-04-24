@@ -21,7 +21,13 @@ namespace klzw
             {
                 size_t byte = static_cast<size_t>(bytes[i]);
                 if (_codeSize < static_cast<ssize_t>(BITS_IN_BYTE))
-                    byte &= maxByteValue >> (BITS_IN_BYTE - _codeSize - _offset);
+                {
+                    ssize_t shift = BITS_IN_BYTE - _codeSize - _offset;
+                    if (shift > 0)
+                    {
+                        byte &= maxByteValue >> shift;
+                    }
+                }
                 codes[currentCodeIndex] += (byte << _byteshift) >> _offset;
                 _byteshift += BITS_IN_BYTE;
                 _codeSize -= BITS_IN_BYTE;
@@ -30,8 +36,17 @@ namespace klzw
                 if (_codeSize < 0)
                 {
                     // codeSize - is negative here
-                    _offset = (BITS_IN_BYTE + _codeSize + _offset) % BITS_IN_BYTE;
+                    _offset = (BITS_IN_BYTE + _codeSize + _offset);
+
+                    // if we have offset then we have some bits to read in this iteration
+                    // otherwise we have read all bits in "i" byte
+                    if (_offset != 0 && _offset < BITS_IN_BYTE)
+                    {
+                        i--;
+                    }
+                    _offset %= BITS_IN_BYTE;
                     _byteshift = 0;
+
                     // if we have extend code parsed then we extend code by 1
                     if (codes[currentCodeIndex] == ExtendCode(codeSize))
                     {
@@ -39,19 +54,8 @@ namespace klzw
                     }
                     currentCodeIndex++;
                     codes.push_back(0);
-                    // // (bytesize - i) how many bytes are left to process
-                    // // if we have bits to process we will add new elem
-                    // // if left bits are less than codeSize it means we finish the conversion
-                    // if (static_cast<ssize_t>((bytesize - i) * BITS_IN_BYTE) - static_cast<ssize_t>(codeSize) > 0)
-                    // {
-                        
-                        
-                    // }
+                   
                     _codeSize = codeSize;
-                    // if we have offset then we have some bits to read in this iteration
-                    // otherwise we have read all bits in "i" byte
-                    if (_offset > 0)
-                        i--;
                 }
             }
         }
@@ -152,6 +156,7 @@ namespace klzw
                 for (size_t i = 0; i < outputcodes.size(); i++)
                 {
                     auto str = table.Get(outputcodes[i]);
+
                     outputbytes.insert(outputbytes.begin() + outputbytes.size(), str.begin(), str.end());
                 }
 
