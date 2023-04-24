@@ -67,7 +67,7 @@ namespace klzw
             // where we store codes
             std::vector<code_t> codestream{}; 
             codestream.reserve(BUF_SIZE);
-            
+
             // bytes to write to outputfile
             std::vector<byte> bytes{};
             bytes.reserve(BUF_SIZE * 2);

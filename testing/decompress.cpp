@@ -10,7 +10,9 @@ TEST(decompress, BytesToCodesBaseCase) {
     const size_t testoffset{0};
     const size_t CODE_SIZE = 9;
     std::vector<klzw::code_t> output{};
-    size_t offset = klzw::details::BytesToCodes(testinput, 0, output, CODE_SIZE);
+    size_t offset{};
+    size_t tmp{};
+    klzw::details::BytesToCodes(testinput, &offset, &tmp, output, CODE_SIZE);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, offset) << "offsets are not equal";
@@ -26,14 +28,15 @@ TEST(decompress, BytesToCodesOffset)
     std::vector<klzw::code_t> testoutput{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111101, 0b111111100, 0b101001001};
     std::vector<klzw::byte> testinput{0b00101000, 0b10101110, 0b11111010, 0b00101000, 0b01000000, 0b10000000, 0b11111110, 0b11111100, 0b10010011, 0b00000010};
     const size_t testoffset{2};
-    const size_t testoffsetarg{2};
+    size_t testoffsetarg{2};
 
     const size_t CODE_SIZE = 9;
     std::vector<klzw::code_t> output{};
-    size_t offset = klzw::details::BytesToCodes(testinput, testoffsetarg, output, CODE_SIZE);
+    size_t tmp{};
+    klzw::details::BytesToCodes(testinput, &testoffsetarg, &tmp, output, CODE_SIZE);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
-    EXPECT_EQ(testoffset, offset) << "offsets are not equal";
+    EXPECT_EQ(testoffset, testoffsetarg) << "offsets are not equal";
 
     for (size_t i = 0; i < testoutput.size(); ++i)
     {
@@ -48,7 +51,9 @@ TEST(decompress, BytesToCodesExtendCodeSizeCase)
     const size_t testoffset{4};
     const size_t CODE_SIZE = 9;
     std::vector<klzw::code_t> output{};
-    size_t offset = klzw::details::BytesToCodes(testinput, 0, output, CODE_SIZE);
+    size_t offset{};
+    size_t tmp{};
+    klzw::details::BytesToCodes(testinput, &offset, &tmp, output, CODE_SIZE);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, offset) << "offsets are not equal";
