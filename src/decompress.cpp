@@ -33,7 +33,7 @@ namespace klzw
                 _codeSize -= BITS_IN_BYTE;
 
                 // reset and parse next code
-                if (_codeSize + static_cast<ssize_t>(_offset) <= 0)
+                if (_codeSize + static_cast<ssize_t>(_offset) <= 0) 
                 {
                     // codeSize - is negative here
                     _offset = (BITS_IN_BYTE + _codeSize + _offset);
@@ -71,7 +71,7 @@ namespace klzw
             details::decomptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{1000};
+            const size_t BUF_SIZE{10000}; // TODO in decompress we have problem with buffer
             char buf[BUF_SIZE];
 
             // this is bufbytes vector for BytesToCode func
@@ -93,7 +93,6 @@ namespace klzw
             ssize_t codeSize{static_cast<ssize_t>(table.CodeSize())};
             size_t oldCodeSize{table.CodeSize()};
             bool isFirstByte{true};
-            code_t oldcode{};
 
             // to save last code if invalid
             code_t tmp{};
@@ -114,6 +113,8 @@ namespace klzw
                 }
                 for (size_t i = 0; i < codes.size(); i++)
                 {
+                    code_t oldcode{};
+
                     std::cout << "i = " << i << std::endl;
                     std::cout << "tmp = " << tmp << std::endl;
                     if (isFirstByte)
