@@ -57,7 +57,7 @@ namespace klzw
             details::comptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{100};
+            const size_t BUF_SIZE{1000};
             char buf[BUF_SIZE + 1];
             
             // our string, in which we are going to store chars

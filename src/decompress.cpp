@@ -33,7 +33,7 @@ namespace klzw
                 _codeSize -= BITS_IN_BYTE;
 
                 // reset and parse next code
-                if (_codeSize < 0)
+                if (_codeSize + static_cast<ssize_t>(_offset) <= 0)
                 {
                     // codeSize - is negative here
                     _offset = (BITS_IN_BYTE + _codeSize + _offset);
@@ -71,7 +71,7 @@ namespace klzw
             details::decomptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{100};
+            const size_t BUF_SIZE{1000};
             char buf[BUF_SIZE];
 
             // this is bufbytes vector for BytesToCode func
