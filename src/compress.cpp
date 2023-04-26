@@ -122,7 +122,8 @@ namespace klzw
                 // we will not write last byte if we have space in the last byte
                 // instead we arrange bytes in that way that in the next iteration we will have
                 // the byte at the first(0) index  
-                size_t writebytes = byteoffset > 0 ? bytes.size() - 1 : bytes.size();
+                size_t writebytes = byteoffset > 0 && !_inputfile.eof() ? bytes.size() - 1 : bytes.size();
+                
                 _outputfile.write(reinterpret_cast<const char *>(&bytes[0]), writebytes);
                 /* DEBUG OUTPUT may come in handy later 
                 std::cout << "\ncode" << "\t\t\t" << "byte in input" << "\t\t\t" << "byte in output" << byteoffset << "\n";

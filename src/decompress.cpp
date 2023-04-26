@@ -40,7 +40,7 @@ namespace klzw
 
                     // if we have offset then we have some bits to read in this iteration
                     // otherwise we have read all bits in "i" byte
-                    if (_offset != 0 && _offset < BITS_IN_BYTE)
+                    if (_offset != 0 && _offset < BITS_IN_BYTE) 
                     {
                         i--;
                     }
@@ -115,6 +115,7 @@ namespace klzw
                 for (size_t i = 0; i < codes.size(); i++)
                 {
                     std::cout << "i = " << i << std::endl;
+                    std::cout << "tmp = " << tmp << std::endl;
                     if (isFirstByte)
                     {
                         outputcodes.push_back(codes[i]);
@@ -161,7 +162,7 @@ namespace klzw
                 }
 
                 _outputfile.write(reinterpret_cast<const char *>(&outputbytes[0]), outputbytes.size());
-
+                
                 // flush everything
                 outputbytes.resize(0);
                 outputcodes.resize(0);
