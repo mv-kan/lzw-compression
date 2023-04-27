@@ -14,7 +14,8 @@ TEST(decompress, BytesToCodesBaseCase)
     size_t offset{};
     size_t tmp{};
     ssize_t tmp2{CODE_SIZE};
-    klzw::details::BytesToCodes(testinput, &offset, &tmp, &tmp2, output, CODE_SIZE);
+    size_t tmp3{CODE_SIZE};
+    klzw::details::BytesToCodes(testinput, &offset, &tmp, &tmp2, output, &tmp3);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     ASSERT_EQ(testoffset, offset) << "offsets are not equal";
@@ -36,7 +37,9 @@ TEST(decompress, BytesToCodesOffset)
     std::vector<klzw::code_t> output{};
     size_t tmp{};
     ssize_t tmp2{CODE_SIZE};
-    klzw::details::BytesToCodes(testinput, &testoffsetarg, &tmp, &tmp2, output, CODE_SIZE);
+    size_t tmp3{CODE_SIZE};
+
+    klzw::details::BytesToCodes(testinput, &testoffsetarg, &tmp, &tmp2, output, &tmp3);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, testoffsetarg) << "offsets are not equal";
@@ -57,7 +60,8 @@ TEST(decompress, BytesToCodesExtendCodeSizeCase)
     size_t offset{};
     size_t tmp{};
     ssize_t tmp2{CODE_SIZE};
-    klzw::details::BytesToCodes(testinput, &offset, &tmp, &tmp2, output, CODE_SIZE);
+    size_t tmp3{CODE_SIZE};
+    klzw::details::BytesToCodes(testinput, &offset, &tmp, &tmp2, output, &tmp3);
 
     ASSERT_EQ(testoutput.size(), output.size()) << "Vectors testoutput and output are of unequal length";
     EXPECT_EQ(testoffset, offset) << "offsets are not equal";
