@@ -14,7 +14,7 @@ namespace klzw
         // @offset - offset of bytes, how many to skip from first byte
         // @codes - vector where to store all codes
         // @codeSize - code size in bits
-        void BytesToCodes(const std::vector<byte> &bytes, size_t *offset, size_t *byteshift, ssize_t *codeSizeVar, std::vector<code_t> &codes, size_t codeSize);
+        void BytesToCodes(const std::vector<byte> &bytes, size_t *offset, size_t *byteshift, ssize_t *codeSizeVar, std::vector<code_t> &codes, size_t *codeSizeTable);
     } // namespace details
     
     void Decompress(std::string inputfile, std::string outputfile);

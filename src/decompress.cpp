@@ -6,7 +6,7 @@ namespace klzw
 {
     namespace details
     {
-        void BytesToCodes(const std::vector<byte> &bytes, size_t *offset, size_t *byteshift, ssize_t *codeSizeVar, std::vector<code_t> &codes, size_t codeSize)
+        void BytesToCodes(const std::vector<byte> &bytes, size_t *offset, size_t *byteshift, ssize_t *codeSizeVar, std::vector<code_t> &codes, size_t *codeSizeTable)
         {
             if (codes.size() == 0)
                 codes.push_back(0);
@@ -15,6 +15,7 @@ namespace klzw
             size_t currentCodeIndex{};
             ssize_t &_codeSize{*codeSizeVar};
             size_t &_byteshift{*byteshift};
+            size_t &_codeSizeTable{*codeSizeTable};
             size_t maxByteValue{MaxValue(BITS_IN_BYTE)};
             size_t bytesize{bytes.size()};
             for (size_t i = 0; i < bytesize; i++)
@@ -33,6 +34,8 @@ namespace klzw
                 _codeSize -= BITS_IN_BYTE;
 
                 // reset and parse next code
+                // codeSize + static_cast<ssize_t>(byteoffset) <= 0 meaning of this exp
+                // if true then it means we finished parsing currentCodeIndex code and we can move on
                 if (_codeSize + static_cast<ssize_t>(_offset) <= 0) 
                 {
                     // codeSize - is negative here
@@ -48,14 +51,14 @@ namespace klzw
                     _byteshift = 0;
 
                     // if we have extend code parsed then we extend code by 1
-                    if (codes[currentCodeIndex] == ExtendCode(codeSize))
+                    if (codes[currentCodeIndex] == ExtendCode(_codeSizeTable))
                     {
-                        codeSize += 1;
+                        _codeSizeTable += 1;
                     }
                     currentCodeIndex++;
                     codes.push_back(0);
-                   
-                    _codeSize = codeSize;
+
+                    _codeSize = _codeSizeTable;
                 }
             }
         }
@@ -71,7 +74,7 @@ namespace klzw
             details::decomptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{100000}; // TODO in decompress we have problem with buffer
+            const size_t BUF_SIZE{3}; // TODO in decompress we have problem with buffer
             char buf[BUF_SIZE];
 
             // this is bufbytes vector for BytesToCode func
@@ -104,18 +107,27 @@ namespace klzw
                 // if we have left bytes in bufbytes we shouldn't overwrite them
                 bufbytes.insert(bufbytes.begin() + bufbytes.size(), std::begin(buf), buf + bytesread);
 
-                details::BytesToCodes(bufbytes, &byteoffset, &byteshift, &codeSize, codes, oldCodeSize);
+                details::BytesToCodes(bufbytes, &byteoffset, &byteshift, &codeSize, codes, &oldCodeSize);
                 // this is in case if we got code extension, BytesToCode handles it but it need old code size to do conversion properly
-                oldCodeSize = table.CodeSize();
-                if (codeSize > 0)
+                if (codeSize + static_cast<ssize_t>(byteoffset) > 0)
                 {
                     // if codeSize is more than zero then last code is not valid
                     tmp = codes[codes.size() - 1];
                     codes.pop_back();
                 }
+                // we have bits of info in the last byte, so we save it for next iteration
+                if (codeSize + static_cast<ssize_t>(byteoffset) <= 0 && byteoffset != 0 && byteoffset < details::BITS_IN_BYTE)
+                {
+                    bufbytes[0] = bufbytes[bufbytes.size() - 1];
+                    bufbytes.resize(1);
+                } else {
+                    // flush completely
+                    bufbytes.resize(0);
+                }
+                std::cout << "codeSize = " << codeSize << std::endl;
+
                 for (size_t i = 0; i < codes.size(); i++)
                 {
-
                     std::cout << "i = " << i << std::endl;
                     std::cout << "tmp = " << tmp << std::endl;
                     if (isFirstByte)
@@ -169,12 +181,12 @@ namespace klzw
                 outputbytes.resize(0);
                 outputcodes.resize(0);
                 codes.resize(0);
-                if (codeSize > 0)
+                // bufbytes.resize(0); already done in the beginning of iteration
+                if (codeSize + static_cast<ssize_t>(byteoffset) > 0)
                 {
                     // last code that is invalid
                     codes.push_back(tmp);
                 }
-                bufbytes.resize(0);
             }
 
             _inputfile.close();

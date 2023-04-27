@@ -119,8 +119,8 @@ int main() {
     klzw::Decompress("/home/kan/Dev/lzw-compression/build/Makefile.klzw", "/home/kan/Dev/lzw-compression/build/Makefile.copy");
     // klzw::Compress("/home/kan/Dev/lzw-compression/build/hippi.test", "/home/kan/Dev/lzw-compression/build/hippi.test.klzw");
     // klzw::Decompress("/home/kan/Dev/lzw-compression/build/hippi.test.klzw", "/home/kan/Dev/lzw-compression/build/hippi.test.decomp");
-    // klzw::Compress("/home/kan/Dev/lzw-compression/build/output.bin", "/home/kan/Dev/lzw-compression/build/output.bin.klzw");
-    // klzw::Decompress("/home/kan/Dev/lzw-compression/build/output.bin.klzw", "/home/kan/Dev/lzw-compression/build/output.bin.decomp");
+    klzw::Compress("/home/kan/Dev/lzw-compression/build/output.bin", "/home/kan/Dev/lzw-compression/build/output.bin.klzw");
+    klzw::Decompress("/home/kan/Dev/lzw-compression/build/output.bin.klzw", "/home/kan/Dev/lzw-compression/build/output.bin.decomp");
 
     return 0;
     // std::cout << "test of reading file" << std::endl;

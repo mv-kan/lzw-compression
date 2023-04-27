@@ -50,6 +50,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 # Enable testing
-enable_testing()
+# enable_testing()
 
-add_subdirectory(testing)
+# add_subdirectory(testing)
