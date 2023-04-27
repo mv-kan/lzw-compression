@@ -10,12 +10,36 @@ This is my implementation of lzw compression heavily inspired by this article ht
     - `STL` standard template lib for basic stuff
     - `fstream` for file write and read
 
+## How to use
+
+```
+# compress
+./klzw originfile
+
+# decompress (output file has to have .klzw extension)
+./klzw originfile.klzw
+
+# compress but don't delete "originfile"
+./klzw -k originfile
+
+# decompress but add .copy to the end of "originfile"
+# outputs to "originfile.copy"
+./klzw -c originfile.klzw
+
+# decompress but don't delete .klzw compressed file
+./klzw -k originfile.klzw
+
+# yes you can do that
+./klzw -kc originfile.klzw
+```
+
+## How to compile
+
 ## Features 
 
 - Compress files 
 - Decompress files
-- Benchmark Intel i5 7200U 8GB on Linux
-    - txt file origin size: , compressed size: , time: 
+
 ## Biggest challenges durring implementation
 
 1. Adding gtest. It is not easy and not intuitive at all. I have spend whole evening to understand how you can add gtest without cloning  googletest repo to my repo. 

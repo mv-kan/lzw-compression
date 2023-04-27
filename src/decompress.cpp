@@ -74,7 +74,7 @@ namespace klzw
             details::decomptable table{};
 
             // buffer, just reading from file stuff
-            const size_t BUF_SIZE{3}; // TODO in decompress we have problem with buffer
+            const size_t BUF_SIZE{1000}; // TODO in decompress we have problem with buffer
             char buf[BUF_SIZE];
 
             // this is bufbytes vector for BytesToCode func
@@ -124,12 +124,9 @@ namespace klzw
                     // flush completely
                     bufbytes.resize(0);
                 }
-                std::cout << "codeSize = " << codeSize << std::endl;
 
                 for (size_t i = 0; i < codes.size(); i++)
                 {
-                    std::cout << "i = " << i << std::endl;
-                    std::cout << "tmp = " << tmp << std::endl;
                     if (isFirstByte)
                     {
                         outputcodes.push_back(codes[i]);

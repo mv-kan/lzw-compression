@@ -1,167 +1,66 @@
-#include <iostream>
-#include <bitset>
-#include <vector>
-#include <string>
-#include <fstream>
-#include "comptable.h"
 #include "klzw.h"
-// klzw stands for kan's lzw 
-using byte = unsigned char;
-const byte MAX_BYTE = 0xFF;
-const int CODE_SIZE = 9; // in bits
-const int BITS_IN_BYTE = 8;
+#include <iostream>
+#include <algorithm>
 
-
-
-void ProtoConvertCodesToBytes(const std::vector<size_t>& codes, std::vector<byte>& bytes) { 
-    size_t offset{};
-    size_t currentByteIndex{};
-    if (bytes.size() == 0)
-        bytes.push_back(0);
-
-    for (size_t i = 0; i < codes.size(); ++i) {
-        size_t code = codes[i];
-        ssize_t codeSize = CODE_SIZE;
-        while (code || codeSize > 0) {
-            bytes[currentByteIndex] += (code << offset) & MAX_BYTE;
-            code >>= BITS_IN_BYTE - offset;
-            codeSize -= BITS_IN_BYTE - offset;
-            // if code size is bigger than 0 then we just add another byte 
-            if (codeSize > 0) {
-                bytes.push_back(0);
-                currentByteIndex++;
-
-                // we dont have offset here so we reset it 
-                offset = 0;
-            } else { // otherwise we change offset value,
-                offset = BITS_IN_BYTE + codeSize; // this is subtraction because codeSize is negative here
-            }
-        }
+std::vector<char> ParseFlags(std::string flagstr)
+{
+    std::vector<char> output{};
+    for (size_t i = 1; i < flagstr.length(); i++)
+    {
+        output.push_back(flagstr[i]);
     }
+    return output;
 }
 
-void ProtoConverBytesToCodes(const std::vector<byte> &bytes, std::vector<size_t> &codes)
+int main(int argc, char **argv)
 {
-    if (codes.size() == 0)
-        codes.push_back(0);
-
-    size_t offset{};
-    size_t currentCodeIndex{};
-    ssize_t codeSize{CODE_SIZE};
-    size_t byteshift{};
-
-    for (size_t i = 0; i < bytes.size(); i++)
+    const std::string helpmessage{"KLZW program\n\n# compress\n./klzw originfile\n\n# decompress (output file has to have .klzw extension)\n./klzw originfile.klzw\n\n# compress but don't delete \"originfile\"\n./klzw -k originfile\n\n# decompress but add .copy to the end of \"originfile\"\n# outputs to \"originfile.copy\"\n./klzw -c originfile.klzw\n\n# decompress but don't delete .klzw compressed file\n./klzw -k originfile.klzw\n\n# yes you can do that\n./klzw -kc originfile.klzw"};
+    if (argc > 3 || argc < 2)
     {
-        size_t byte = static_cast<size_t>(bytes[i]);
-        if (codeSize < BITS_IN_BYTE)
-            byte &= MAX_BYTE >> (BITS_IN_BYTE - codeSize - offset);
-        codes[currentCodeIndex] += (byte << byteshift) >> offset;
-        byteshift += BITS_IN_BYTE;
-        codeSize -= BITS_IN_BYTE;
-
-        // reset and parse next code
-        if (codeSize < 0) {
-            currentCodeIndex++;
-            codes.push_back(0);
-            // codeSize - is negative here  
-            offset = (BITS_IN_BYTE + codeSize + offset) % BITS_IN_BYTE;
-            codeSize = CODE_SIZE;
-            byteshift = 0;
-            // if we have offset then we have some bits to read in this iteration
-            // otherwise we have read all bits in "i" byte
-            if (offset > 0)
-                i--;
+        std::cout << helpmessage << "\n";
+        return 1;
+    }
+    std::string file{};
+    std::vector<char> flags{};
+    if (argc == 2)
+    {
+        file = std::string(argv[1]);
+    }
+    else if (argc == 3)
+    {
+        std::string flagstr{argv[1]};
+        if (flagstr[0] == '-') {
+            flags = ParseFlags(flagstr);
         }
+        file = std::string(argv[2]);
     }
-}
-
-// reads codes that was writen by ProtoWriteToFileCodes file
-void ProtoReadFromFileConvertToCodes(const std::string file, std::vector<size_t> &codes)
-{
-    std::ifstream in(file, std::ios::in | std::ios::binary); // or use full path "C:/example.txt"
-    if (in.is_open())
+    if (std::count(flags.begin(), flags.end(), 'h')) {
+        std::cout << helpmessage << "\n";
+        return 0;
+    }
+    // decompress
+    if (file.substr(file.find_last_of(".") + 1) == "klzw")
     {
-        byte buf[100];
-        in.read(reinterpret_cast<char*>(buf), sizeof(buf));
-        std::vector<byte> bytes{buf, buf + sizeof(buf) / sizeof(buf[0])};
-        // size_t eof_code = 0b1111111111;
-        ProtoConverBytesToCodes(bytes, codes);
-        // for (size_t i = 0; i < codes.size(); i++)
-        // {
-        //     if (codes[i] == eof_code) {
-        //         codes.resize(i + 1);
-        //         break;
-        //     }
-        // }
+        std::string outputfile = file.substr(0, file.find_last_of("."));
+        if (std::count(flags.begin(), flags.end(), 'c'))
+        {
+            outputfile += ".copy";
+        }
+        klzw::Decompress(file, outputfile);
+        if (!std::count(flags.begin(), flags.end(), 'k')) 
+        {
+            std::remove(file.c_str());
+        }
+        
     }
+    // compress
     else
     {
-        std::cout << "Unable to open file.\n";
+        klzw::Compress(file, file + ".klzw");
+        if (!std::count(flags.begin(), flags.end(), 'k'))
+        {
+            std::remove(file.c_str());
+        }
     }
-}
-
-// write codes 
-void ProtoWriteToFileCodes(const std::string file, const std::vector<size_t> &codes)
-{
-    std::vector<byte> bytes{};
-    ProtoConvertCodesToBytes(codes, bytes);
-    std::ofstream out;
-    out.open(file, std::ios::out | std::ios::binary); // or use full path "C:/example.bin"
-    out.write(reinterpret_cast<const char *>(& bytes[0]), bytes.size());
-    out.close();
-}
-
-int main() {
-    std::cout << "test of decompress file" << std::endl;
-    // klzw::Compress("/home/kan/Dev/lzw-compression/build/filecomptest.bin", "/home/kan/Dev/lzw-compression/build/filecomptest.bin.klzw");
-    // klzw::Decompress("/home/kan/Dev/lzw-compression/build/filecomptest.bin.klzw", "/home/kan/Dev/lzw-compression/build/decompressed.bin");
-    klzw::Compress("/home/kan/Dev/lzw-compression/build/Makefile", "/home/kan/Dev/lzw-compression/build/Makefile.klzw");
-    klzw::Decompress("/home/kan/Dev/lzw-compression/build/Makefile.klzw", "/home/kan/Dev/lzw-compression/build/Makefile.copy");
-    // klzw::Compress("/home/kan/Dev/lzw-compression/build/hippi.test", "/home/kan/Dev/lzw-compression/build/hippi.test.klzw");
-    // klzw::Decompress("/home/kan/Dev/lzw-compression/build/hippi.test.klzw", "/home/kan/Dev/lzw-compression/build/hippi.test.decomp");
-    klzw::Compress("/home/kan/Dev/lzw-compression/build/output.bin", "/home/kan/Dev/lzw-compression/build/output.bin.klzw");
-    klzw::Decompress("/home/kan/Dev/lzw-compression/build/output.bin.klzw", "/home/kan/Dev/lzw-compression/build/output.bin.decomp");
-
-    return 0;
-    // std::cout << "test of reading file" << std::endl;
-    // klzw::Compress("/home/kan/Dev/lzw-compression/build/filecomptest.bin", "/home/kan/Dev/lzw-compression/build/filecomptest2.bin.klzw");
-
-    // return 0;
-    // // klzw::details::comptable tb{};
-    // // std::cout << "Hi" << std::endl;
-    // // std::cout << "tb['A'] = " << tb.Get({'A'}) << std::endl;
-    // // std::cout << "tb['a'] = " << tb.Get({'a'}) << std::endl;
-    // // std::cout << "tb['B'] = " << tb.Get({'B'}) << std::endl;
-    // // std::cout << "tb['b'] = " << tb.Get({'b'}) << std::endl;
-    // // std::cout << "tb['\\null'] = " << tb.Get({0}) << std::endl;
-    // // return 0;
-    // std::vector<size_t> codes{0b110001010, 0b101010101, 0b010001111, 0b1, 0b1, 0b111111110, 0b1111111100, 0b1, 0b1101001001};
-    // std::vector<size_t> codes2;
-    // std::vector<byte> bytes;
-
-    // size_t offset = klzw::details::CodesToBytes(codes, CODE_SIZE, bytes, 0);
-    // std::cout << offset << std::endl;
-    // for (size_t i = 0; i < bytes.size(); i++) {
-    //     // std::cout << "0b"<<std::bitset<8>(bytes[i]) << "\t" << (int)bytes[i] << std::endl;
-    //     std::cout << "0b"<<std::bitset<8>(bytes[i]) << ", ";
-    // }
-    // std::cout << offset << std::endl;
-    // // return 0;
-    // offset = klzw::details::BytesToCodes(bytes, 0, codes2, CODE_SIZE);
-    // std::cout << "BYTES TO CODES " << offset << std::endl;
-    // for (size_t i = 0; i < codes2.size(); i++)
-    // {
-    //     std::cout << "0b"<< std::bitset<CODE_SIZE + 1>(codes2[i]) << std::endl;
-    // }
-    // return 0;
-    // codes2.resize(0);
-
-    // ProtoWriteToFileCodes("./test.bin", codes);
-    // ProtoReadFromFileConvertToCodes("./test.bin", codes2);
-    // std::cout << "After read\n";
-    // for (size_t i = 0; i < codes2.size(); i++)
-    // {
-    //     std::cout << std::bitset<10>(codes2[i]) << std::endl;
-    // }
     return 0;
 }

@@ -35,7 +35,7 @@ add_executable(${TARGET} ${SOURCES})
 
 add_library(${TARGET_LIB} STATIC ${SOURCES})
 
-target_compile_features(${TARGET} PRIVATE cxx_std_11)
+target_compile_features(${TARGET} PRIVATE cxx_std_17)
 
 # gtest
 
