@@ -2,13 +2,28 @@
 
 This is my implementation of lzw compression heavily inspired by this article https://www.cs.cmu.edu/~cil/lzw.and.gif.txt
 
+This is loseless compression and works best with text data.
+
 ## The stack 
 
 - `gtest` for testing
 - `cmake` for building
-- `c++11` as main lang
+- `c++17` as main lang
     - `STL` standard template lib for basic stuff
     - `fstream` for file write and read
+
+## Benchmark
+
+Program | Filename | Size | Compressed Size | Data Compression Ratio
+---| --- | --- | --- | ---
+klzw (my program) | `bible.txt` | `4.3MB` | `1.4MB` | `3.07`
+gzip | `bible.txt` | `4.3MB` | `1.4MB` | `3.07`
+klzw (my program) | `LICENSE.txt` | `18KB` | `8.7KB` | `2.06`
+gzip | `LICENSE.txt` | `18KB` | `6.7KB` | `2.68`
+klzw (my program) | `sudo` (executable) | `198KB` | `116KB` | `1.70`
+gzip | `sudo` (executable) | `198KB` | `88KB` | `2.25`
+
+Please keep in mind that `klzw` is based on [LZW](https://www.geeksforgeeks.org/lzw-lempel-ziv-welch-compression-technique/) algorithm, and `gzip` is based on [DEFLATE](https://en.wikipedia.org/wiki/Deflate) algorithm
 
 ## How to compile
 
