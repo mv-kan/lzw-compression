@@ -1,5 +1,7 @@
 # Simple LZW Compressor (klzw)
 
+<img src="./static/logo.png"  width="25%"/>
+
 This is my implementation of lzw compression heavily inspired by this article https://www.cs.cmu.edu/~cil/lzw.and.gif.txt
 
 This is loseless compression and works best with text data.
